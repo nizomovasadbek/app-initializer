@@ -22,7 +22,7 @@ bool generateCmake(const char* restrict, void (*)(const char* restrict));
 bool generateMake(const char* restrict, void (*)(const char* restrict));
 void generateCfile(const char *restrict);
 
-bool generate(__attribute__((unused)) uint32_t result, const char* folder_name) {
+bool generate(uint32_t result, const char* folder_name) {
     uint32_t folder_name_length = strlen(folder_name);
     int status = mkdir(folder_name, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     char sub[folder_name_length + 6];
