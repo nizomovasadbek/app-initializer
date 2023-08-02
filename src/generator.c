@@ -1,4 +1,5 @@
 #include "generator.h"
+#include "parser.h"
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -10,7 +11,16 @@ const char* cmake_content = "cmake_minimum_required(VERSION 3.12)\n"
  "file(GLOB SRC \"src/*.c\")\n"
  "add_executable(main ${SRC})\n";
 
-bool generateCmake(const char* restrict);
+const char* make_content = "CC=gcc\nCC_FLAG=-g -fsanitize=address\nSRC=src\nBUILD=build\n"
+ "\nall: check compile\ncompile:\n\t$(CC) $(CC_FLAG) $(SRC)/main.c -o $(BUILD)/main\n\n"
+ "check:\n\tmkdir -p $(BUILD)\n\nclean:\n\trm -rf $(BUILD)\n";
+
+const char* c_content = "#include <stdio.h>\n\nint main() {\n\tprintf(\"Hello World!\");\n"
+    "\n\treturn 0;\n}";
+
+bool generateCmake(const char* restrict, void (*)(const char* restrict));
+bool generateMake(const char* restrict, void (*)(const char* restrict));
+void generateCfile(const char *restrict);
 
 bool generate(__attribute__((unused)) uint32_t result, const char* folder_name) {
     uint32_t folder_name_length = strlen(folder_name);
@@ -20,7 +30,11 @@ bool generate(__attribute__((unused)) uint32_t result, const char* folder_name) 
     strncat(sub, folder_name, folder_name_length);
     strncat(sub, "/src", 5);
     status = status || mkdir(sub, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-    status = status || !generateCmake(folder_name);
+
+    if(result & MAKEFILE) {
+        status = status || !generateMake(folder_name, generateCfile);
+    } else
+        status = status || !generateCmake(folder_name, generateCfile);
 
     if(!status) {
         return true;
@@ -29,17 +43,51 @@ bool generate(__attribute__((unused)) uint32_t result, const char* folder_name) 
     return false;
 }
 
-bool generateCmake(const char* restrict foldername) {
-    char cmakefilename[strlen(foldername) + 16];
-    memset(cmakefilename, 0, strlen(foldername) + 16);
+bool generateMake(const char* restrict folder_name, void (*generate_c)(const char *restrict c_file)) {
+    unsigned flen = strlen(folder_name);
+    char makefilename[flen + 10];
+    memset(makefilename, 0, flen+10);
+    strcat(makefilename, folder_name);
+    strcat(makefilename, "/Makefile");
+
+    FILE* make = fopen(makefilename, "w+");
+    if(make == NULL) return false;
+
+    fwrite(make_content, strlen(make_content), 1, make);
+    generate_c(folder_name);
+
+    fclose(make);
+    return true;
+}
+
+bool generateCmake(const char* restrict foldername, void (*generate_c)(const char *restrict c_file)) {
+    unsigned flen = strlen(foldername);
+    char cmakefilename[flen + 16];
+    memset(cmakefilename, 0, flen + 16);
     strcat(cmakefilename, foldername);
     strcat(cmakefilename, "/CMakeLists.txt");
 
     FILE* cmake = fopen(cmakefilename, "w+");
-    
+
     if(cmake == NULL) return false;
     fwrite(cmake_content, strlen(cmake_content), 1, cmake);
+    generate_c(foldername);
 
     fclose(cmake);
     return true;
+}
+
+void generateCfile(const char *restrict c_file) {
+    unsigned len = strlen(c_file);
+    char sub[len + 12];
+    memset(sub, 0, 12);
+    strcat(sub, c_file);
+    strcat(sub, "/src/main.c");
+
+    FILE* cfile = fopen(sub, "w+");
+    if(cfile == NULL) return;
+
+    fwrite(c_content, strlen(c_content), 1, cfile);
+
+    fclose(cfile);
 }
