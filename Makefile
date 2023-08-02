@@ -18,7 +18,7 @@ make_dir:
 	mkdir -p $(BUILD)
 
 clean:
-	rm -rf $(BUILD)
+	rm -rf $(BUILD) app
 
 run:
 	$(BUILD)/$(MAIN)
