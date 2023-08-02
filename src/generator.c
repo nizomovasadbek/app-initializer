@@ -15,7 +15,7 @@ const char* make_content = "CC=gcc\nCC_FLAG=-g -fsanitize=address\nSRC=src\nBUIL
  "\nall: check compile\ncompile:\n\t$(CC) $(CC_FLAG) $(SRC)/main.c -o $(BUILD)/main\n\n"
  "check:\n\tmkdir -p $(BUILD)\n\nclean:\n\trm -rf $(BUILD)\n";
 
-const char* c_content = "#include <stdio.h>\n\nint main() {\n\tprintf(\"Hello World!\");\n"
+const char* c_content = "#include <stdio.h>\n\nint main() {\n\tprintf(\"Hello World!\\n\");\n"
     "\n\treturn 0;\n}";
 
 bool generateCmake(const char* restrict, void (*)(const char* restrict));
