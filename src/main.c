@@ -12,8 +12,10 @@ int main(int argc, char* argv[]) {
 
     uint32_t result = parse(argc, argv);
     if(result & HELP) {
-        printf("Simple C/C++ app generator.\n\t-h, --help -- prints this message and exits\n");
-        return 1;
+        printf("Simple C/C++ app generator.\n\t-h, --help\t\tprints this message and exits\n");
+        printf("\t-m, --makefile\t\tGenerate project with Makefile (Default cmake file)\n");
+		printf("\nVersion 1.0.0\n");
+		return 1;
     }
 
     generate(result, argv[1]);

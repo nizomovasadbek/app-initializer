@@ -28,6 +28,6 @@ run:
 release:
 	$(CC) $(C_SOURCES) $(CC_FLAG) $(CC_FLAG_RELEASE) -o $(BUILD)/$(MAIN)
 
-install:
+install: compile
 	cp $(BUILD)/$(MAIN) $(BUILD)/$(INSTALL_NAME)
 	install -m 755 $(BUILD)/$(INSTALL_NAME) $(INSTALL_DIR)
