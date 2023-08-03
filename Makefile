@@ -8,6 +8,8 @@ BUILD=build
 
 C_SOURCES=$(wildcard $(SRC)/*.c)
 MAIN=main
+INSTALL_NAME=cgen
+INSTALL_DIR=/usr/local/bin
 
 all: make_dir compile
 
@@ -25,3 +27,7 @@ run:
 
 release:
 	$(CC) $(C_SOURCES) $(CC_FLAG) $(CC_FLAG_RELEASE) -o $(BUILD)/$(MAIN)
+
+install:
+	cp $(BUILD)/$(MAIN) $(BUILD)/$(INSTALL_NAME)
+	install -m 755 $(BUILD)/$(INSTALL_NAME) $(INSTALL_DIR)
