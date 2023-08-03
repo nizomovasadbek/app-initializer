@@ -3,7 +3,7 @@
 
 #define HELP                0x01
 #define MAKEFILE            0x02
-#define RESERVED0           0x04
+#define CPLUSPLUS           0x04
 #define RESERVED1           0x08
 #define RESERVED2           0x10
 #define RESERVED3           0x20
@@ -16,6 +16,7 @@
 #define COMMAND_HELP_ALT1       "--help"
 #define COMMAND_MAKEFILE        "--makefile"
 #define COMMAND_MAKEFILE_ALT1   "-m"
+#define COMMAND_CPLUSPLUS       "-cpp"
 
 #include <stdint.h>
 
