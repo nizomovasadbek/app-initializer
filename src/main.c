@@ -18,7 +18,11 @@ int main(int argc, char* argv[]) {
 		return 1;
     }
 
-    generate(result, argv[1]);
+    for(unsigned char i = 1; i < argc; i++) {
+        if(argv[i][0] != '-') {
+            generate(result, argv[i]);
+        }
+    }
 
     return 0;
 }

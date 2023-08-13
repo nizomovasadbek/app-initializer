@@ -11,8 +11,8 @@ const char* cmake_content = "cmake_minimum_required(VERSION 3.12)\n"
  "file(GLOB SRC \"src/*.c\")\n"
  "add_executable(main ${SRC})\n";
 
-const char* make_content = "CC=gcc\nCC_FLAG=-g -fsanitize=address\nSRC=src\nBUILD=build\n"
- "\nall: check compile\ncompile:\n\t$(CC) $(CC_FLAG) $(SRC)/main.c -o $(BUILD)/main\n\n"
+const char* make_content = "CC=gcc\nCC_FLAG=-g -fsanitize=address\nSRC=src\nBUILD=build\nMAIN=main"
+ "\nall: check compile\ncompile:\n\t$(CC) $(CC_FLAG) $(SRC)/main.c -o $(BUILD)/$(MAIN)\n\n"
  "check:\n\tmkdir -p $(BUILD)\n\nclean:\n\trm -rf $(BUILD)\n";
 
 const char* c_content = "#include <stdio.h>\n\nint main() {\n\tprintf(\"Hello World!\\n\");\n"
@@ -36,11 +36,7 @@ bool generate(uint32_t result, const char* folder_name) {
     } else
         status = status || !generateCmake(folder_name, generateCfile);
 
-    if(!status) {
-        return true;
-    }
-
-    return false;
+    return !status;
 }
 
 bool generateMake(const char* restrict folder_name, void (*generate_c)(const char *restrict c_file)) {
