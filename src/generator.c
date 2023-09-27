@@ -18,9 +18,13 @@ const char* make_content = "CC=gcc\nCC_FLAG=-g -fsanitize=address\nSRC=src\nBUIL
 const char* c_content = "#include <stdio.h>\n\nint main() {\n\tprintf(\"Hello World!\\n\");\n"
     "\n\treturn 0;\n}";
 
+const char* cpp_content = "#include <iostream>\n\nint main(){\n\t"
+    "std::cout << \"Hello, World\" << std::endl;\n\treturn 0;\n}";
+
 bool generateCmake(const char* restrict, void (*)(const char* restrict));
 bool generateMake(const char* restrict, void (*)(const char* restrict));
 void generateCfile(const char *restrict);
+void generateCppFile(const char *restrict);
 
 bool generate(uint32_t result, const char* folder_name) {
     uint32_t folder_name_length = strlen(folder_name);
@@ -30,11 +34,15 @@ bool generate(uint32_t result, const char* folder_name) {
     strncat(sub, folder_name, folder_name_length);
     strncat(sub, "/src", 5);
     status = status || mkdir(sub, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    void (*function)(const char *restrict) = generateCfile;
+    if(result & CPLUSPLUS) {
+        function = generateCppFile;
+    }
 
     if(result & MAKEFILE) {
-        status = status || !generateMake(folder_name, generateCfile);
+        status = status || !generateMake(folder_name, function);
     } else
-        status = status || !generateCmake(folder_name, generateCfile);
+        status = status || !generateCmake(folder_name, function);
 
     return !status;
 }
@@ -81,9 +89,24 @@ void generateCfile(const char *restrict c_file) {
     strcat(sub, "/src/main.c");
 
     FILE* cfile = fopen(sub, "w+");
-    if(cfile == NULL) return;
+    if(!cfile) return;
 
     fwrite(c_content, strlen(c_content), 1, cfile);
 
     fclose(cfile);
+}
+
+void generateCppFile(const char *restrict cpp_file) {
+    unsigned len = strlen(cpp_file);
+    char sub[len + 14];
+    memset(sub, 0, 14);
+    strcat(sub, cpp_file);
+    strcat(sub, "/src/main.cpp");
+
+    FILE* cppfile = fopen(sub, "w+");
+    if(!cppfile) return;
+
+    fwrite(cpp_content, strlen(cpp_content), 1, cppfile);
+
+    fclose(cppfile);
 }

@@ -14,6 +14,7 @@ int main(int argc, char* argv[]) {
     if(result & HELP) {
         printf("Simple C/C++ app generator.\n\t-h, --help\t\tprints this message and exits\n");
         printf("\t-m, --makefile\t\tGenerate project with Makefile (Default cmake file)\n");
+        printf("\t-cpp\t\tC++ application instead of C.\n");
 		printf("\nVersion 1.0.0\n");
 		return 1;
     }
